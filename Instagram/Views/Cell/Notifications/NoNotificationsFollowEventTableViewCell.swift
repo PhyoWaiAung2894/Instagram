@@ -79,7 +79,8 @@ class NoNotificationsFollowEventTableViewCell: UITableViewCell {
         }
         
         label.text = model.text
-        profileImageView.sd_setImage(with: model.user.profilePhoto)
+//        profileImageView.image = UIImage(named: model.user.profilePhoto)
+        profileImageView.sd_setImage(with: model.otherUser.profilePhoto)
     }
     
     private func configureForFollowButton() {

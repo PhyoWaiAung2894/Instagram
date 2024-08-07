@@ -30,7 +30,6 @@ class IGFeedPostGeneralTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.backgroundColor = .systemOrange
         contentView.addSubview(userName)
         contentView.addSubview(commentsText)
     }
@@ -41,21 +40,21 @@ class IGFeedPostGeneralTableViewCell: UITableViewCell {
     
     override func layoutSubviews() {
         
-        userName.frame = CGRect(x: 0,
+        userName.frame = CGRect(x: 5,
                                 y: 0,
-                                width: contentView.height-10,
-                                height: contentView.height)
-        commentsText.frame = CGRect(x: 0,
-                                    y: userName.bottom + 2,
+                                width: contentView.width-10,
+                                height: contentView.height/2)
+        commentsText.frame = CGRect(x: 5,
+                                    y: userName.bottom,
                                     width: contentView.width-10,
-                                    height: contentView.height-10-userName.height)
+                                    height: contentView.height/2)
     }
     
-    public func configure(model: [PostComment]){
+    public func configure(model: PostComment){
         
-        for text in model {
-            userName.text = text.username
-        }
+        userName.text = model.username
+        commentsText.text = model.text
+        
     }
 
 }
