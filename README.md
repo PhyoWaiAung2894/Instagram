@@ -4,13 +4,13 @@ This project is an Instagram-like app built programmatically using UIKit with so
 
 Features
 
-	•	Programmatic UI with UIKit: All UI components are created programmatically without using Storyboards or XIB files.
-	•	MVC Architecture: The project follows the MVC design pattern to separate concerns and manage code effectively.
-	•	Mock Data: Includes mock data for posts, comments, and users to simulate a real Instagram feed.
-	•	Firebase Authentication: Users can register and log in using Firebase Authentication.
-	•	User Profiles: Displays user profiles with their posts and information.
-	•	Photo Feed: Simulates a photo feed with mock posts.
-	•	Post Details: Displays details of a post including comments and likes.
+• Programmatic UI with UIKit: All UI components are created programmatically without using Storyboards or XIB files.
+• MVC Architecture: The project follows the MVC design pattern to separate concerns and manage code effectively.
+• Mock Data: Includes mock data for posts, comments, and users to simulate a real Instagram feed.
+• Firebase Authentication: Users can register and log in using Firebase Authentication.
+• User Profiles: Displays user profiles with their posts and information.
+• Photo Feed: Simulates a photo feed with mock posts.
+• Post Details: Displays details of a post including comments and likes.
 
  Screenshots
 
