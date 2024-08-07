@@ -17,7 +17,7 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        createMockData()
         view.backgroundColor = .systemBackground
         configureNavigationBar()
         
@@ -38,7 +38,7 @@ final class ProfileViewController: UIViewController {
         
         collectionView?.register(ProfileTabsCollectionReusableView.self.self,forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ProfileTabsCollectionReusableView.identifier)
         
-        collectionView?.backgroundColor = .systemRed
+        collectionView?.backgroundColor = .systemBackground
         collectionView?.delegate = self
         collectionView?.dataSource = self
         guard let collectionView = collectionView else {
@@ -53,6 +53,42 @@ final class ProfileViewController: UIViewController {
         collectionView?.frame = view.bounds
     }
     
+    private func createMockData() {
+        
+        userPosts.removeAll()
+        
+        let usernames = ["Clark Kent", "Diana Prince", "Barry Allen", "Hal Jordan"]
+   
+        let postsURL = [
+            "https://images7.alphacoders.com/134/thumb-1920-1340753.png",
+            "https://wallpapers-clan.com/wp-content/uploads/2023/11/dc-aesthetic-batman-red-desktop-wallpaper-preview.jpg",
+            "https://mfiles.alphacoders.com/100/thumb-350-1008719.png",
+            "https://mfiles.alphacoders.com/100/thumb-350-1008720.png",
+            "https://mfiles.alphacoders.com/100/thumb-350-1008721.png"
+        ]
+        
+        let usercomments = [
+        "Woo Nice Post",
+        "You Look Great",
+        "Nice Picture",
+        "That's our sir bat"
+        ]
+        
+        for i in 0..<usernames.count {
+            
+            var comments = [PostComment]()
+            for x in 0...1 {
+                comments.append(PostComment(identifier: "123_\(x)", username: "@\(usernames.randomElement() ?? "Hero")", text: "\(usercomments.randomElement() ?? "Hero")", createdDate: "12-\(x)-2024", likeCount: []))
+            }
+            
+            let user = User(username: "Bruce Wayne", profilePhoto: URL(string: "https://static.wikia.nocookie.net/dc-abridged/images/5/5e/BruceWayne001.png/revision/latest/scale-to-width-down/1000?cb=20200507041747")!, bio: "", name: (first: "", last: ""), birthDate: Date(), gender: .male, counts: UserCount(followers: 1, following: 1, posts: 1), joinDate: Date())
+            
+            let post = UserPost(postType: .photo, thumbNailImage: URL(string: "\(postsURL[i])")!, postURL: URL(string: "\(postsURL[i])")!, caption: nil, likeCount: [], comments: comments, createdDate: Date(), taggedUsers: [], owner: user)
+            
+            userPosts.append(post)
+        }
+    }
+    
     private func configureNavigationBar() {
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gear"), style: .done, target: self, action: #selector(didTapSettingButton))
@@ -62,16 +98,6 @@ final class ProfileViewController: UIViewController {
         let vc = SettingsViewController()
         navigationController?.pushViewController(vc, animated: true)
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }
 
@@ -95,18 +121,15 @@ extension ProfileViewController: UICollectionViewDataSource {
             return 0
         }
         
-        return 30
+        return userPosts.count
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         
         let model = userPosts[indexPath.row]
-        let user = User(username: "Bruce Wyne", profilePhoto: URL(string: "https://www.google.com")!, bio: "", name: (first: "",last: ""), birthDate: Date(), gender: .male, counts: UserCount(followers: 1, following: 1, posts: 1), joinDate: Date())
-        
-        let post = UserPost(postType: .photo, thumbNailImage: URL(string: "https://www.google.com")!, postURL: URL(string: "https://www.google.com")!, caption: nil, likeCount: [], comments: [], createdDate: Date(), taggedUsers: [], owner: user)
-        
-        let vc = PostViewController(model: post)
+      
+        let vc = PostViewController(model: model)
         vc.title = model.postType.rawValue
         vc.navigationItem.largeTitleDisplayMode = .never
         navigationController?.pushViewController(vc, animated: true)
@@ -120,11 +143,11 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-//        let  model = userPosts[indexPath.row]
+        let  model = userPosts[indexPath.row]
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewCell.identifier, for: indexPath) as! PhotoCollectionViewCell
         cell.backgroundColor = .systemBlue
-//        cell.configure(with: model)
-        cell.configure(debug: "test")
+        cell.configure(with: model)
+//        cell.configure(debug: "test")
         return cell
     }
     
@@ -172,8 +195,17 @@ extension ProfileViewController: ProfileInfoHeaderCollectionReusableViewDelegate
     func profileHeaderDidTapFollowerButton(_ header: ProfileInfoHeaderCollectionReusableView) {
         
         var mockData = [UserRelationShip]()
-        for x in 0..<10 {
-            mockData.append(UserRelationShip(username: "Ryan Reynold", name: "DeadPool", type: x % 2 == 0 ? .following : .notFollowing))
+        let usernames = ["Clark Kent", "Diana Prince", "Barry Allen", "Hal Jordan"]
+        
+        let profilePhotos = [
+            
+            "https://static.wikia.nocookie.net/superman/images/0/0a/Clarkkent-secretorigin.jpg/revision/latest?cb=20100916050519",
+            "https://static.wikia.nocookie.net/dcmovies/images/b/b1/Wonder_Woman_DCAU.png/revision/latest?cb=20190515014353",
+            "https://static.wikia.nocookie.net/heroes-and-villain/images/4/40/Barry_Allen_Earth-16_0003.png/revision/latest?cb=20220623161239",
+            "https://static.wikia.nocookie.net/dcanimated/images/7/7b/Hal_Jordan.png/revision/latest?cb=20180708123731"
+        ]
+        for x in 0..<usernames.count {
+            mockData.append(UserRelationShip(username: usernames[x], userProfilePhoto: URL(string: profilePhotos[x])!, name: usernames[x], type: x % 2 == 0 ? .following : .notFollowing))
         }
         
         let vc = ListsViewController(data: mockData)
@@ -186,8 +218,17 @@ extension ProfileViewController: ProfileInfoHeaderCollectionReusableViewDelegate
     func profileHeaderDidTapFollowingButton(_ header: ProfileInfoHeaderCollectionReusableView) {
         
         var mockData = [UserRelationShip]()
-        for x in 0..<10 {
-            mockData.append(UserRelationShip(username: "Ryan Reynold", name: "DeadPool", type: x % 2 == 0 ? .following : .notFollowing))
+        let usernames = ["Clark Kent", "Diana Prince", "Barry Allen", "Hal Jordan"]
+        
+        let profilePhotos = [
+            
+            "https://static.wikia.nocookie.net/superman/images/0/0a/Clarkkent-secretorigin.jpg/revision/latest?cb=20100916050519",
+            "https://static.wikia.nocookie.net/dcmovies/images/b/b1/Wonder_Woman_DCAU.png/revision/latest?cb=20190515014353",
+            "https://static.wikia.nocookie.net/heroes-and-villain/images/4/40/Barry_Allen_Earth-16_0003.png/revision/latest?cb=20220623161239",
+            "https://static.wikia.nocookie.net/dcanimated/images/7/7b/Hal_Jordan.png/revision/latest?cb=20180708123731"
+        ]
+        for x in 0..<usernames.count {
+            mockData.append(UserRelationShip(username: usernames[x], userProfilePhoto: URL(string:  profilePhotos[x])!, name: usernames[x], type: x % 2 == 0 ? .following : .notFollowing))
         }
         
         let vc = ListsViewController(data: mockData)

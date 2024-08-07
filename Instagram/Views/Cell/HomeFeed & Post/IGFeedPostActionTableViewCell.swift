@@ -19,9 +19,10 @@ class IGFeedPostActionTableViewCell: UITableViewCell {
     
     weak var delegate : IGFeedPostActionTableViewCellDelegate?
     
+    private var isLiked = false
     private let likeButton : UIButton = {
         let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .light)
+        let config = UIImage.SymbolConfiguration(pointSize: 25, weight: .medium)
         let image = UIImage(systemName: "heart", withConfiguration: config)
         button.setImage(image, for: .normal)
         button.tintColor = .label
@@ -30,7 +31,7 @@ class IGFeedPostActionTableViewCell: UITableViewCell {
     
     private let commentButton : UIButton = {
         let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .light)
+        let config = UIImage.SymbolConfiguration(pointSize: 25, weight: .medium)
         let image = UIImage(systemName: "message", withConfiguration: config)
         button.setImage(image, for: .normal)
         button.tintColor = .label
@@ -39,7 +40,7 @@ class IGFeedPostActionTableViewCell: UITableViewCell {
     
     private let sendButton : UIButton = {
         let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .light)
+        let config = UIImage.SymbolConfiguration(pointSize: 25, weight: .medium)
         let image = UIImage(systemName: "paperplane", withConfiguration: config)
         button.setImage(image, for: .normal)
         button.tintColor = .label
@@ -63,7 +64,13 @@ class IGFeedPostActionTableViewCell: UITableViewCell {
     }
     
     @objc private func didTapLikeButton() {
+        isLiked.toggle()
         delegate?.tapLikeButton()
+        let imageName = isLiked ? "heart.fill" : "heart"
+        let imageColor = isLiked ? UIColor.red : UIColor.systemGray
+         
+         likeButton.setImage(UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(pointSize: 25, weight: .medium)), for: .normal)
+         likeButton.tintColor = imageColor
     }
     
     @objc private func didTapCommentButton() {
@@ -71,12 +78,12 @@ class IGFeedPostActionTableViewCell: UITableViewCell {
     }
     
     @objc private func didTapSendButtton() {
-        delegate?.tapCommentButton()
+        delegate?.tapSendButton()
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
+        likeButton.setImage(UIImage(systemName: "heart", withConfiguration: UIImage.SymbolConfiguration(pointSize: 25, weight: .medium)), for: .normal)
     }
     
     override func layoutSubviews() {
@@ -94,7 +101,7 @@ class IGFeedPostActionTableViewCell: UITableViewCell {
         }
     }
     
-    public func configure(){
+    public func configure(model: String){
         
     }
 

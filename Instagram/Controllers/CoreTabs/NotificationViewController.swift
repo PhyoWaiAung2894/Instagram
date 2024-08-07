@@ -13,6 +13,7 @@ enum UserNotificationType {
 struct UserNotification {
     let type : UserNotificationType
     let text : String
+    let otherUser : User
     let user : User
 }
 
@@ -75,13 +76,46 @@ class NotificationViewController: UIViewController {
     }
     
     private func fetchNotification() {
-        for x in 0...100 {
+        
+        let usernames = ["Clark Kent", "Diana Prince", "Barry Allen", "Hal Jordan"]
+        
+        let profilePhotos = [
             
-            let user = User(username: "Bruce Wyne", profilePhoto: URL(string: "https://www.google.com")!, bio: "", name: (first: "",last: ""), birthDate: Date(), gender: .male, counts: UserCount(followers: 1, following: 1, posts: 1), joinDate: Date())
+            "https://static.wikia.nocookie.net/superman/images/0/0a/Clarkkent-secretorigin.jpg/revision/latest?cb=20100916050519",
+            "https://static.wikia.nocookie.net/dcmovies/images/b/b1/Wonder_Woman_DCAU.png/revision/latest?cb=20190515014353",
+            "https://static.wikia.nocookie.net/heroes-and-villain/images/4/40/Barry_Allen_Earth-16_0003.png/revision/latest?cb=20220623161239",
+            "https://static.wikia.nocookie.net/dcanimated/images/7/7b/Hal_Jordan.png/revision/latest?cb=20180708123731"
+        ]
+        
+        let usercomments = [
+        "Woo Nice Post",
+        "You Look Great",
+        "Nice Picture",
+        "That's our sir bat"
+        ]
+        
+        
+        let postsURL = [
+            "https://images7.alphacoders.com/134/thumb-1920-1340753.png",
+            "https://wallpapers-clan.com/wp-content/uploads/2023/11/dc-aesthetic-batman-red-desktop-wallpaper-preview.jpg",
+            "https://mfiles.alphacoders.com/100/thumb-350-1008719.png",
+            "https://mfiles.alphacoders.com/100/thumb-350-1008720.png",
+            "https://mfiles.alphacoders.com/100/thumb-350-1008721.png"
+        ]
+        
+        for x in 0..<usernames.count {
+            var comments = [PostComment]()
+            for x in 0...1 {
+                comments.append(PostComment(identifier: "123_\(x)", username: "@\(usernames.randomElement() ?? "Hero")", text: "\(usercomments.randomElement() ?? "Hero")", createdDate: "12-\(x)-2024", likeCount: []))
+            }
+            let user = User(username: "Bruce Wayne", profilePhoto: URL(string: "https://static.wikia.nocookie.net/dc-abridged/images/5/5e/BruceWayne001.png/revision/latest/scale-to-width-down/1000?cb=20200507041747")!, bio: "", name: (first: "",last: ""), birthDate: Date(), gender: .male, counts: UserCount(followers: 1, following: 1, posts: 1), joinDate: Date())
             
-            let post = UserPost(postType: .photo, thumbNailImage: URL(string: "https://www.google.com")!, postURL: URL(string: "https://www.google.com")!, caption: nil, likeCount: [], comments: [], createdDate: Date(), taggedUsers: [], owner: user)
+            let post = UserPost(postType: .photo, thumbNailImage: URL(string: postsURL[x])!, postURL: URL(string: postsURL[x])!, caption: nil, likeCount: [], comments: comments, createdDate: Date(), taggedUsers: [], owner: user)
             
-            let model = UserNotification(type: x % 2 == 0 ? .like(post: post) : .follow(state: .following), text: "Hello world", user: user)
+            let otheruser = User(username: usernames[x], profilePhoto: URL(string: profilePhotos[x])!, bio: "", name: (first: "",last: ""), birthDate: Date(), gender: .male, counts: UserCount(followers: 1, following: 1, posts: 1), joinDate: Date())
+            
+            
+            let model = UserNotification(type: x % 2 == 0 ? .like(post: post) : .follow(state: .following), text: x % 2 == 0 ? "\(usernames[x]) Like your Post" : "\(usernames[x]) started following you.", otherUser: otheruser, user: user)
             
             models.append(model)
         }
@@ -125,7 +159,7 @@ extension NotificationViewController: UITableViewDataSource {
             //follow cell
             let cell = tableView.dequeueReusableCell(withIdentifier: NoNotificationsFollowEventTableViewCell.identifier, for: indexPath) as! NoNotificationsFollowEventTableViewCell
             cell.delegate = self
-//            cell.configure(with: model)
+            cell.configure(with: model)
             return cell
         }
        

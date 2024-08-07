@@ -24,7 +24,7 @@ class ProfileInfoHeaderCollectionReusableView: UICollectionReusableView {
     private let profilePhotoImageView: UIImageView = {
         
         let imageView = UIImageView()
-        imageView.backgroundColor = .systemRed
+        imageView.image = UIImage(named: "batman1")
         imageView.layer.masksToBounds = true
         return imageView
     }()
@@ -68,7 +68,7 @@ class ProfileInfoHeaderCollectionReusableView: UICollectionReusableView {
     private let nameLabel : UILabel = {
         
         let label = UILabel()
-        label.text = "Joe Black"
+        label.text = "Bruce Wayne"
         label.textColor = .label
         label.numberOfLines = 1
         return label
@@ -77,7 +77,7 @@ class ProfileInfoHeaderCollectionReusableView: UICollectionReusableView {
     private let bioLabel : UILabel = {
         
         let label = UILabel()
-        label.text = "This is first account"
+        label.text = "A crimefighter operating in Gotham City, I serve as its protector, using the symbol of a bat to strike fear into the hearts of criminals. "
         label.textColor = .label
         label.numberOfLines = 0
         return label
@@ -91,6 +91,10 @@ class ProfileInfoHeaderCollectionReusableView: UICollectionReusableView {
         backgroundColor = .systemBackground
         clipsToBounds = true
         
+    }
+    
+    private func configure(model: String){
+        profilePhotoImageView.image = UIImage(named: model)
     }
     
     required init?(coder: NSCoder) {

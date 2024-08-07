@@ -20,9 +20,11 @@ class ExploreViewController: UIViewController {
     
     private var models = [UserPost]()
     
-    private var collectionView : UICollectionView?
+    private var filteredModels = [UserPost]()
     
-    private var userPosts = [UserPost]()
+    private var isSearching = false
+    
+    private var collectionView : UICollectionView?
     
     private var tabbedSearchCollectionView: UICollectionView?
     
@@ -47,6 +49,50 @@ class ExploreViewController: UIViewController {
         configureDimmedView()
         
         configureTabbedSearch()
+        
+        createMockData()
+    }
+    
+    private func createMockData() {
+        
+        models.removeAll()
+        
+        let usernames = ["Bruce Wayne", "Clark Kent", "Diana Prince", "Barry Allen", "Hal Jordan"]
+        let profilePhotos = [
+            "https://static.wikia.nocookie.net/dc-abridged/images/5/5e/BruceWayne001.png/revision/latest/scale-to-width-down/1000?cb=20200507041747",
+            "https://static.wikia.nocookie.net/superman/images/0/0a/Clarkkent-secretorigin.jpg/revision/latest?cb=20100916050519",
+            "https://static.wikia.nocookie.net/dcmovies/images/b/b1/Wonder_Woman_DCAU.png/revision/latest?cb=20190515014353",
+            "https://static.wikia.nocookie.net/heroes-and-villain/images/4/40/Barry_Allen_Earth-16_0003.png/revision/latest?cb=20220623161239",
+            "https://static.wikia.nocookie.net/dcanimated/images/7/7b/Hal_Jordan.png/revision/latest?cb=20180708123731"
+        ]
+        
+        let postsURL = [
+            "https://images7.alphacoders.com/134/thumb-1920-1340753.png",
+            "https://www.chromethemer.com/wallpapers/chromebook-wallpapers/images/960/superman-chromebook-wallpaper.jpg",
+            "https://birchtree.me/wp-content/uploads/2017/03/wonder-woman.jpg",
+            "https://images6.alphacoders.com/133/thumb-1920-1330136.png",
+            "https://wallpapercat.com/w/middle-retina/f/0/1/10769-3840x2160-desktop-4k-green-lantern-wallpaper.jpg"
+        ]
+        
+        let usercomments = [
+        "Woo Nice Post",
+        "You Look Great",
+        "Nice Picture"
+        ]
+        
+        for i in 0..<usernames.count {
+            
+            var comments = [PostComment]()
+            for x in 0...1 {
+                comments.append(PostComment(identifier: "123_\(x)", username: "@\(usernames.randomElement() ?? "Hero")", text: "\(usercomments.randomElement() ?? "Hero")", createdDate: "12-\(x)-2024", likeCount: []))
+            }
+            
+            let user = User(username: "\(usernames[i])", profilePhoto: URL(string: "\(profilePhotos[i])")!, bio: "", name: (first: "", last: ""), birthDate: Date(), gender: .male, counts: UserCount(followers: 1, following: 1, posts: 1), joinDate: Date())
+            
+            let post = UserPost(postType: .photo, thumbNailImage: URL(string: "\(postsURL[i])")!, postURL: URL(string: "\(postsURL[i])")!, caption: nil, likeCount: [], comments: comments, createdDate: Date(), taggedUsers: [], owner: user)
+            
+            models.append(post)
+        }
     }
     
     private func configureExploreCollectionView() {
@@ -86,7 +132,7 @@ class ExploreViewController: UIViewController {
         layout.scrollDirection = .horizontal
         tabbedSearchCollectionView = UICollectionView(frame: .zero,collectionViewLayout: layout)
         tabbedSearchCollectionView?.backgroundColor = .yellow
-        tabbedSearchCollectionView?.isHidden = false
+        tabbedSearchCollectionView?.isHidden = true
         guard let tabbedSearchCollectionView = tabbedSearchCollectionView else {
             return
         }
@@ -101,16 +147,7 @@ class ExploreViewController: UIViewController {
         dimmedView.frame = view.bounds
         tabbedSearchCollectionView?.frame = CGRect(x: 0, y: additionalSafeAreaInsets.top, width: view.width, height: 72)
     }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+  
 }
 
 //MARK: - CollectionView Delegate
@@ -128,21 +165,14 @@ extension ExploreViewController: UICollectionViewDataSource {
         if collectionView == tabbedSearchCollectionView {
             return 0
         }
-        return 50
+        return isSearching ? filteredModels.count : models.count
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         
-        if collectionView == tabbedSearchCollectionView {
-            return
-        }
-        
-        let user = User(username: "Bruce Wyne", profilePhoto: URL(string: "https://www.google.com")!, bio: "", name: (first: "",last: ""), birthDate: Date(), gender: .male, counts: UserCount(followers: 1, following: 1, posts: 1), joinDate: Date())
-        
-        let post = UserPost(postType: .photo, thumbNailImage: URL(string: "https://www.google.com")!, postURL: URL(string: "https://www.google.com")!, caption: nil, likeCount: [], comments: [], createdDate: Date(), taggedUsers: [], owner: user)
-        let vc = PostViewController(model: post)
-        vc.title = post.postType.rawValue
+        let vc = PostViewController(model: models[indexPath.row])
+        vc.title = models[indexPath.row].postType.rawValue
         navigationController?.pushViewController(vc , animated: true)
     }
 }
@@ -159,9 +189,9 @@ extension ExploreViewController: UICollectionViewDelegateFlowLayout {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewCell.identifier, for: indexPath) as? PhotoCollectionViewCell else {
             return UICollectionViewCell()
         }
-                
-        cell.configure(debug: "test")
-        
+               
+        let model = isSearching ? filteredModels[indexPath.row] : models[indexPath.row]
+        cell.configure(with: model)
         return cell
     }
 }
@@ -190,6 +220,8 @@ extension ExploreViewController: UISearchBarDelegate {
     }
     
     @objc func didCancleSearch() {
+        searchBar.text = ""
+        query("")
         searchBar.resignFirstResponder()
         navigationItem.rightBarButtonItem = nil
         self.tabbedSearchCollectionView?.isHidden = true
@@ -201,8 +233,16 @@ extension ExploreViewController: UISearchBarDelegate {
             }
         }
     }
-    func query(_ text: String){
-        
+    
+    func query(_ text: String) {
+        if text.isEmpty {
+            isSearching = false
+            filteredModels.removeAll()
+        } else {
+            isSearching = true
+            filteredModels = models.filter { $0.owner.username.lowercased().contains(text.lowercased()) }
+        }
+        collectionView!.reloadData()
     }
     
 }

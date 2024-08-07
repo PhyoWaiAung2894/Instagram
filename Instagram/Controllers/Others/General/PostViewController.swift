@@ -27,12 +27,12 @@ class PostViewController: UIViewController {
     private let tableView: UITableView = {
         
         let tableview = UITableView()
-        tableview.separatorStyle = .singleLine
+    
         tableview.register(IGFeedPostTableViewCell.self, forCellReuseIdentifier: IGFeedPostTableViewCell.identifier)
         tableview.register(IGFeedPostHeaderTableViewCell.self, forCellReuseIdentifier: IGFeedPostHeaderTableViewCell.identifier)
         tableview.register(IGFeedPostActionTableViewCell.self, forCellReuseIdentifier: IGFeedPostActionTableViewCell.identifier)
         tableview.register(IGFeedPostGeneralTableViewCell.self, forCellReuseIdentifier: IGFeedPostGeneralTableViewCell.identifier)
-        
+        tableview.separatorStyle = .singleLine
         return tableview
     }()
     
@@ -46,6 +46,7 @@ class PostViewController: UIViewController {
         guard let userPostMoel = self.model else {
             return
         }
+        renderModel.removeAll()
         //Header
         
         renderModel.append(PostRenderViewModel(renderType: .header(provider: userPostMoel.owner)))
@@ -55,14 +56,7 @@ class PostViewController: UIViewController {
         //Action
         renderModel.append(PostRenderViewModel(renderType: .actions(provider: "")))
         
-        //Comments
-        var comments = [PostComment]()
-        for x in 1...2{
-            let username = "@Robot\(x)"
-            let identifier = "123_\(x)"
-            comments.append(PostComment(identifier: "123_\(x)", username: username, text: "Welcome", createdDate: "12-10-2024", likeCount: [CommentLike(username: username, commentIdentifier: identifier)]))
-        }
-        renderModel.append(PostRenderViewModel(renderType: .comments(provider: comments)))
+        renderModel.append(PostRenderViewModel(renderType: .comments(provider: userPostMoel.comments)))
     }
     
     required init?(coder: NSCoder) {
@@ -77,6 +71,10 @@ class PostViewController: UIViewController {
         tableView.dataSource = self
         view.backgroundColor = .systemBackground
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        configureModel()
     }
     
     override func viewDidLayoutSubviews() {
@@ -138,19 +136,19 @@ extension PostViewController: UITableViewDataSource {
             
         case .header(let user):
             let cell = tableView.dequeueReusableCell(withIdentifier: IGFeedPostHeaderTableViewCell.identifier, for: indexPath) as! IGFeedPostHeaderTableViewCell
-            
+            cell.configure(with: user)
             return cell
         case .primaryContent(let post):
             let cell = tableView.dequeueReusableCell(withIdentifier: IGFeedPostTableViewCell.identifier, for: indexPath) as! IGFeedPostTableViewCell
-            
+            cell.configure(with: post)
             return cell
         case .actions(let action):
             let cell = tableView.dequeueReusableCell(withIdentifier: IGFeedPostActionTableViewCell.identifier, for: indexPath) as! IGFeedPostActionTableViewCell
-            
+            cell.configure(model: action)
             return cell
         case .comments(let provider):
             let cell = tableView.dequeueReusableCell(withIdentifier: IGFeedPostGeneralTableViewCell.identifier, for: indexPath) as! IGFeedPostGeneralTableViewCell
-            
+            cell.configure(model: provider[indexPath.row])
             return cell
         }
     }

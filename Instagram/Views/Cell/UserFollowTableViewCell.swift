@@ -17,6 +17,7 @@ enum FollowState {
 
 struct UserRelationShip {
     let username : String
+    let userProfilePhoto: URL
     let name : String
     let type: FollowState
 }
@@ -119,6 +120,7 @@ class UserFollowTableViewCell: UITableViewCell {
         self.model = model
         nameLabel.text = model.name
         userNameLabel.text = model.username
+        profileImageView.sd_setImage(with: model.userProfilePhoto)
         
         switch model.type {
         case .following:
