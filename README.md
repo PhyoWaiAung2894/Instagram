@@ -1,4 +1,4 @@
-Instagram
+#  Build like Instagram App
 
 This project is an Instagram-like app built programmatically using UIKit with some parts initialized using Storyboard. The purpose of this app is to provide a hands-on experience with the Model-View-Controller (MVC) design pattern, and demonstrate how to build an app from scratch with mock data, login, and registration functionalities using Firebase.
 
